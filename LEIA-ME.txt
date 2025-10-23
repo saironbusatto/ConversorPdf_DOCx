@@ -1,0 +1,33 @@
+========================================
+  CONVERSOR PDF PARA DOCX
+========================================
+
+REQUISITOS:
+- Python 3.x instalado
+  Download: https://www.python.org/downloads/
+
+INSTALAÇÃO:
+1. Execute: INSTALAR.bat
+   (Instala todas as dependências necessárias)
+
+EXECUÇÃO:
+2. Execute: EXECUTAR.bat
+   (Inicia o conversor e abre o navegador)
+
+COMO USAR:
+- Arraste PDFs para a área de upload
+- Clique em "Converter"
+- Visualize o texto convertido
+- Use setas ↑↓ para navegar entre "PROCESSO:"
+- Baixe o arquivo DOCX quando necessário
+
+PASTAS:
+- Docsbase/ - PDFs originais (opcional)
+- Documentos convertidos/ - Arquivos DOCX gerados
+- uploads/ - Temporária (criada automaticamente)
+
+SUPORTE:
+- Para encerrar: Pressione CTRL+C no terminal
+- Em caso de erro: Verifique se Python está instalado
+
+========================================

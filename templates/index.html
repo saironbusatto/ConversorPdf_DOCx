@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor PDF para DOCX</title>
+    <link rel="icon" type="image/x-icon" href="/static/R.ico">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 25%; background: white; padding: 20px; overflow-y: auto; border-right: 2px solid #000; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header img { max-width: 150px; margin-bottom: 10px; }
+        h1 { color: #000; font-size: 18px; margin-bottom: 20px; }
+        .upload-area { border: 2px dashed #333; padding: 30px 10px; text-align: center; border-radius: 8px; margin-bottom: 15px; cursor: pointer; background: #fff; font-size: 14px; }
+        .upload-area:hover { border-color: #000; background: #f5f5f5; }
+        .btn { background: #000; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; }
+        .btn:hover { background: #333; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        #fileList { margin: 15px 0; font-size: 13px; }
+        .file-item { padding: 8px; background: #f5f5f5; margin: 5px 0; border-radius: 4px; border-left: 3px solid #000; font-size: 12px; }
+        .results { margin-top: 20px; }
+        .result-item { padding: 10px; background: #f5f5f5; margin: 5px 0; border-radius: 4px; border-left: 3px solid #000; cursor: pointer; font-size: 13px; }
+        .result-item:hover { background: #e0e0e0; }
+        .result-item.active { background: #000; color: white; }
+        .loading { display: none; text-align: center; margin: 15px 0; color: #000; font-size: 13px; }
+        .content { width: 75%; background: white; padding: 40px; overflow-y: auto; position: relative; }
+        .content h2 { color: #000; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .content p { line-height: 1.8; color: #333; margin-bottom: 15px; white-space: pre-wrap; }
+        .empty-state { text-align: center; color: #999; margin-top: 100px; }
+        .highlight { background: yellow; font-weight: bold; padding: 2px 4px; }
+        .tags-nav { position: fixed; bottom: 20px; left: 25%; transform: translateX(50%); background: #000; color: white; padding: 15px 25px; border-radius: 8px; display: none; z-index: 1000; }
+        .tags-nav button { background: white; color: #000; border: none; padding: 8px 15px; margin: 0 5px; cursor: pointer; border-radius: 4px; font-size: 14px; }
+        .tags-nav button:hover { background: #f0f0f0; }
+        .tags-nav span { margin: 0 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <img src="/static/Logo_preta.png" alt="Logo">
+            <h1>Conversor PDF</h1>
+        </div>
+        
+        <div class="upload-area" id="uploadArea">
+            <p>Clique ou arraste PDFs</p>
+            <input type="file" id="fileInput" multiple accept=".pdf" style="display: none;">
+        </div>
+        
+        <div id="fileList"></div>
+        
+        <button class="btn" id="convertBtn" onclick="convertFiles()" disabled>Converter</button>
+        
+        <div class="loading" id="loading">⏳ Convertendo...</div>
+        
+        <div class="results" id="results"></div>
+    </div>
+    
+    <div class="content" id="content">
+        <div class="empty-state">
+            <h2>📄 Visualização do Documento</h2>
+            <p>Selecione um arquivo convertido para visualizar o conteúdo</p>
+        </div>
+    </div>
+    
+    <div class="tags-nav" id="tagsNav">
+        <button onclick="navigateTag(-1)">▲ Anterior</button>
+        <span id="tagCounter">0 / 0</span>
+        <button onclick="navigateTag(1)">▼ Próximo</button>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileList = document.getElementById('fileList');
+        const convertBtn = document.getElementById('convertBtn');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        let selectedFiles = [];
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            displayFileList();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.style.borderColor = '#007bff';
+            uploadArea.style.background = '#f8f9fa';
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+            
+            const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+            if (files.length > 0) {
+                selectedFiles = files;
+                displayFileList();
+            }
+        });
+
+        function displayFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '';
+                convertBtn.disabled = true;
+                return;
+            }
+            
+            fileList.innerHTML = '<h3 style="font-size: 14px; margin-bottom: 10px;">Selecionados:</h3>';
+            selectedFiles.forEach(file => {
+                fileList.innerHTML += `<div class="file-item">📄 ${file.name}</div>`;
+            });
+            convertBtn.disabled = false;
+        }
+
+        async function convertFiles() {
+            if (selectedFiles.length === 0) return;
+            
+            convertBtn.disabled = true;
+            loading.style.display = 'block';
+            results.innerHTML = '';
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => formData.append('files[]', file));
+            
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.files && data.files.length > 0) {
+                    results.innerHTML = '<h3 style="font-size: 14px; margin-bottom: 10px;">✅ Convertidos:</h3>';
+                    data.files.forEach(filename => {
+                        results.innerHTML += `
+                            <div class="result-item" onclick="viewFile('${filename}')" id="item-${filename}">
+                                📝 ${filename.replace('.docx', '')}
+                            </div>
+                        `;
+                    });
+                } else {
+                    results.innerHTML = '<p style="color: red; font-size: 13px;">Erro na conversão</p>';
+                }
+            } catch (error) {
+                results.innerHTML = '<p style="color: red;">Erro: ' + error.message + '</p>';
+            } finally {
+                loading.style.display = 'none';
+                convertBtn.disabled = false;
+                selectedFiles = [];
+                fileInput.value = '';
+                fileList.innerHTML = '';
+            }
+        }
+
+        let currentTag = 0;
+        let totalTags = 0;
+        let tagPositions = [];
+        
+        async function viewFile(filename) {
+            document.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`item-${filename}`).classList.add('active');
+            
+            const response = await fetch(`/view/${filename}`);
+            const data = await response.json();
+            
+            // Destacar PROCESSO: no texto
+            let highlightedText = data.text.replace(/PROCESSO:/gi, '<span class="highlight" id="tag-$&">PROCESSO:</span>');
+            let counter = 0;
+            highlightedText = highlightedText.replace(/class="highlight" id="tag-PROCESSO:"/g, () => `class="highlight" id="tag-${counter++}"`);
+            
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <h2>${filename.replace('.docx', '')}</h2>
+                <button class="btn" onclick="downloadFile('${filename}')" style="width: auto; margin-bottom: 20px;">⬇ Baixar DOCX</button>
+                <div id="textContent">${highlightedText.split('\n').map(p => `<p>${p}</p>`).join('')}</div>
+            `;
+            
+            // Configurar navegação de tags
+            totalTags = data.tags.length;
+            currentTag = 0;
+            
+            const tagsNav = document.getElementById('tagsNav');
+            if (totalTags > 0) {
+                tagsNav.style.display = 'block';
+                updateTagCounter();
+            } else {
+                tagsNav.style.display = 'none';
+            }
+        }
+        
+        function navigateTag(direction) {
+            if (totalTags === 0) return;
+            
+            currentTag += direction;
+            if (currentTag < 0) currentTag = totalTags - 1;
+            if (currentTag >= totalTags) currentTag = 0;
+            
+            const tag = document.getElementById(`tag-${currentTag}`);
+            if (tag) {
+                tag.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                updateTagCounter();
+            }
+        }
+        
+        function updateTagCounter() {
+            document.getElementById('tagCounter').textContent = `${currentTag + 1} / ${totalTags}`;
+        }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                navigateTag(1);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                navigateTag(-1);
+            }
+        });
+        
+        function downloadFile(filename) {
+            window.location.href = `/download/${filename}`;
+        }
+    </script>
+</body>
+</html>

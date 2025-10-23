@@ -1,0 +1,35 @@
+═══════════════════════════════════════════════════════════
+  INSTRUÇÕES PARA PUBLICAR NO GITHUB
+═══════════════════════════════════════════════════════════
+
+📋 PASSO 1: INSTALAR GIT (se necessário)
+   Baixe em: https://git-scm.com/download/win
+   Instale com as opções padrão
+
+📋 PASSO 2: CRIAR REPOSITÓRIO NO GITHUB
+   1. Acesse: https://github.com/new
+   2. Nome sugerido: conversor-pdf-docx
+   3. Descrição: Sistema para conversão de PDF em DOCX com interface web
+   4. Deixe PÚBLICO ou PRIVADO (sua escolha)
+   5. NÃO marque "Add README" (já temos)
+   6. Clique em "Create repository"
+
+📋 PASSO 3: EXECUTAR SETUP
+   1. Execute: SETUP_GIT.bat
+   2. Aguarde a conclusão
+
+📋 PASSO 4: CONECTAR AO GITHUB
+   Copie e execute no terminal (substitua SEU_USUARIO e NOME_REPO):
+
+   git remote add origin https://github.com/SEU_USUARIO/NOME_REPO.git
+   git push -u origin main
+   git push origin develop
+
+📋 ESTRUTURA CRIADA:
+   ✅ Branch main (principal/produção)
+   ✅ Branch develop (desenvolvimento)
+   ✅ .gitignore configurado
+   ✅ Arquivos Amazon Q ignorados
+   ✅ Pastas temporárias ignoradas
+
+═══════════════════════════════════════════════════════════
