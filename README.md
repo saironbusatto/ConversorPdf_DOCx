@@ -1,3 +1,5 @@
+**English** · [Português (BR)](README.pt-BR.md)
+
 # 📄 PDF to DOCX Converter
 
 System for converting PDF files to DOCX with on-screen preview and tag-based navigation.
