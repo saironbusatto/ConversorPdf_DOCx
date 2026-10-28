@@ -1,48 +1,48 @@
-# 📄 Conversor PDF para DOCX
+# 📄 PDF to DOCX Converter
 
-Sistema para conversão de arquivos PDF em DOCX com visualização e navegação por tags.
+System for converting PDF files to DOCX with on-screen preview and tag-based navigation.
 
-## 🚀 Instalação e Uso
+## 🚀 Install and Usage
 
-### Para Usuários Finais:
-1. Execute `INSTALAR.bat` (primeira vez apenas)
-2. Execute `EXECUTAR.bat` para iniciar
-3. Leia `LEIA-ME.txt` para instruções detalhadas
+### For End Users:
+1. Run `INSTALAR.bat` (first time only)
+2. Run `EXECUTAR.bat` to start
+3. Read `LEIA-ME.txt` for detailed instructions
 
-### Para Desenvolvedores:
+### For Developers:
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-## 📁 Estrutura de Pastas
+## 📁 Folder Structure
 
-- **Docsbase/** - PDFs originais (opcional)
-- **Documentos convertidos/** - Arquivos DOCX gerados
-- **uploads/** - Temporária (criada automaticamente)
-- **templates/** - Interface HTML
-- **static/** - Logo e ícone
+- **Docsbase/** - Original PDFs (optional)
+- **Documentos convertidos/** - Generated DOCX files
+- **uploads/** - Temporary (created automatically)
+- **templates/** - HTML interface
+- **static/** - Logo and icon
 
-## ✨ Funcionalidades
+## ✨ Features
 
-✅ Upload múltiplo de PDFs (drag & drop)
-✅ Conversão automática para DOCX
-✅ Visualização do texto em tela dividida
-✅ Navegação por tags "PROCESSO:" (setas ↑↓)
-✅ Download individual dos arquivos
-✅ Interface web local preto e branco
+✅ Multiple PDF upload (drag & drop)
+✅ Automatic conversion to DOCX
+✅ Split-screen text preview
+✅ Navigation by "PROCESSO:" tags (↑↓ arrows)
+✅ Individual file download
+✅ Local black-and-white web interface
 
-## 🔧 Tecnologias
+## 🔧 Technologies
 
 - Python 3.x
-- Flask (servidor web)
-- pdfplumber (extração de texto)
-- python-docx (geração DOCX)
+- Flask (web server)
+- pdfplumber (text extraction)
+- python-docx (DOCX generation)
 
-## 📦 Distribuição
+## 📦 Distribution
 
-Distribua a pasta completa com:
+Ship the complete folder with:
 - INSTALAR.bat
 - EXECUTAR.bat
 - LEIA-ME.txt
-- Todos os arquivos do projeto
+- All project files
